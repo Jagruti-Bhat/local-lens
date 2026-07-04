@@ -1,11 +1,12 @@
-import Navbar from "../components/Navbar";
+import Hero from "@/components/home/Hero";
+import FeatureSection from "@/components/home/FeatureSection";
 
 export default function Home() {
   return (
     <>
-      <Navbar />
+      <Hero />
 
-      <div className="p-8">Home</div>
+      <FeatureSection />
     </>
   );
 }

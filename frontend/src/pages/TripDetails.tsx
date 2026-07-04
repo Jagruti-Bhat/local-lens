@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
-import Navbar from "../components/Navbar";
+import Navbar from "../components/common/Navbar";
 import Loading from "../components/Loading";
 import DayCard from "../components/DayCard";
-import BudgetCard from "../components/BudgetCard";
 
 import { getTrip, generateTrip } from "../api/tripApi";
 
 import { Trip } from "../types/trip";
+import BudgetCard from "@/components/trip/BudgetCard";
 
 export default function TripDetails() {
   const { id } = useParams();
@@ -51,8 +51,6 @@ export default function TripDetails() {
 
   return (
     <>
-      <Navbar />
-
       <div className="max-w-5xl mx-auto p-8">
         <h1 className="text-4xl font-bold">{trip.destination}</h1>
 

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import Navbar from "../components/Navbar";
+import Navbar from "../components/common/Navbar";
 
 import { createTrip } from "../api/tripApi";
 
@@ -51,8 +51,6 @@ export default function CreateTrip() {
 
   return (
     <>
-      <Navbar />
-
       <div className="max-w-3xl mx-auto p-8">
         <h1 className="text-3xl font-bold mb-8">Create Trip</h1>
 

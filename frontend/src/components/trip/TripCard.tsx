@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Trip } from "../types/trip";
+import { Trip } from "../../types/trip";
 
 interface Props {
   trip: Trip;
