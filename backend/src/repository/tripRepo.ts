@@ -1,10 +1,19 @@
 import Trip from "../models/trip";
+import imageService from "../service/image.service";
 import { CreateTripDto } from "../types/trip.types";
 import { Itinerary } from "../types/trip.types";
 
 class TripRepository {
-  async create(data: CreateTripDto) {
-    return Trip.create(data);
+  async create(body: CreateTripDto) {
+    const imageUrl = await imageService.getDestinationImage(body.destination);
+
+    console.log(imageUrl);
+
+    return Trip.create({
+      ...body,
+
+      imageUrl,
+    });
   }
 
   async findByIdOrThrow(id: string) {

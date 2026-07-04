@@ -31,4 +31,5 @@ export interface Trip {
   budget: number;
   interests: string[];
   itinerary?: Itinerary;
+  imageUrl?: string;
 }

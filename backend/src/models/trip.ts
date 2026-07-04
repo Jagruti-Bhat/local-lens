@@ -21,6 +21,8 @@ class Trip extends Model<InferAttributes<Trip>, InferCreationAttributes<Trip>> {
   declare interests: string[];
 
   declare itinerary: CreationOptional<Itinerary | null>;
+
+  declare imageUrl: CreationOptional<string | null>;
 }
 
 Trip.init(
@@ -55,6 +57,10 @@ Trip.init(
       type: DataTypes.JSONB,
       allowNull: true,
     },
+    imageUrl: {
+    type: DataTypes.TEXT,
+    allowNull: true,
+},
   },
   {
     sequelize,

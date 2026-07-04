@@ -25,7 +25,10 @@ export default function TripCard({ trip }: Props) {
   return (
     <Card className="overflow-hidden rounded-2xl shadow-md hover:shadow-xl transition">
       <img
-        src={image}
+        src={
+          trip.imageUrl ??
+          "https://images.unsplash.com/photo-1507525428034-b723cf961d3e"
+        }
         alt={trip.destination}
         className="h-56 w-full object-cover"
       />

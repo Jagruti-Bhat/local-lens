@@ -18,6 +18,7 @@ import { getWeather } from "@/api/weatherApi";
 import WeatherCard from "@/components/trip/WeatherCard";
 import { downloadTripPDF } from "@/utils/pdf";
 import { toast } from "sonner";
+import DestinationBanner from "@/components/trip/DestinationBanner";
 
 export default function TripDetails() {
   const { id } = useParams();
@@ -26,6 +27,7 @@ export default function TripDetails() {
 
   const [trip, setTrip] = useState<Trip>();
   const [weather, setWeather] = useState<any>(null);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (id) {
@@ -61,9 +63,19 @@ export default function TripDetails() {
   }
 
   async function handleGenerate() {
-    await generateItinerary(id!);
+    try {
+      setLoading(true);
 
-    loadTrip();
+      await generateItinerary(id!);
+
+      await loadTrip();
+
+      toast.success("Itinerary generated");
+    } catch (err) {
+      toast.error("Failed to generate itinerary");
+    } finally {
+      setLoading(false);
+    }
   }
 
   if (!trip) {
@@ -76,6 +88,12 @@ export default function TripDetails() {
         <ArrowLeft className="mr-2 h-4 w-4" />
         Back
       </Button>
+      <DestinationBanner
+        trip={trip}
+        onGenerate={handleGenerate}
+        onDownloadPdf={() => downloadTripPDF(trip)}
+        generating={loading}
+      />
 
       <h1 className="text-5xl font-bold mt-6">{trip.destination}</h1>
 
