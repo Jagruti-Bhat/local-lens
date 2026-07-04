@@ -17,15 +17,15 @@ class ImageService {
         },
       );
 
-      console.log("response", response);
+      const results = response.data.results;
 
-      const image = response.data.results[0];
-
-      if (!image) {
+      if (!results.length) {
         return null;
       }
 
-      return image.urls.regular;
+      const random = results[Math.floor(Math.random() * results.length)];
+
+      return random.urls.regular;
     } catch (err) {
       console.error("Unsplash Error", err);
 
