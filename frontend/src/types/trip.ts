@@ -1,10 +1,3 @@
-export interface CreateTripDto {
-  destination: string;
-  days: number;
-  budget: number;
-  interests: string[];
-}
-
 export interface Activity {
   time: string;
   activity: string;
@@ -12,23 +5,23 @@ export interface Activity {
   cost: string;
 }
 
-export interface DayPlan {
+export interface Day {
   day: number;
   title: string;
   activities: Activity[];
 }
 
 export interface BudgetBreakdown {
-  flights: string;
   hotel: string;
   food: string;
   transport: string;
+  flights: string;
 }
 
 export interface Itinerary {
-  days: DayPlan[];
-  budgetBreakdown: BudgetBreakdown;
+  days: Day[];
   tips: string[];
+  budgetBreakdown: BudgetBreakdown;
 }
 
 export interface Trip {
@@ -37,5 +30,5 @@ export interface Trip {
   days: number;
   budget: number;
   interests: string[];
-  itinerary: Itinerary | null;
+  itinerary?: Itinerary;
 }

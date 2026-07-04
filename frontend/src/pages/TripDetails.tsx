@@ -1,97 +1,121 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
 
-import Navbar from "../components/common/Navbar";
-import Loading from "../components/Loading";
-import DayCard from "../components/DayCard";
+import { useNavigate, useParams } from "react-router-dom";
 
-import { getTrip, generateTrip } from "../api/tripApi";
+import { ArrowLeft } from "lucide-react";
 
-import { Trip } from "../types/trip";
-import BudgetCard from "@/components/trip/BudgetCard";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+
+import DayCard from "@/components/DayCard";
+import BudgetSection from "@/components/trip/BudgetSection";
+import TipsSection from "@/components/trip/TipsSection";
+
+import { getTrip, generateItinerary } from "@/api/tripApi";
+
+import { Trip } from "@/types/trip";
+import { getWeather } from "@/api/weatherApi";
+import WeatherCard from "@/components/trip/WeatherCard";
+import { downloadTripPDF } from "@/utils/pdf";
+import { toast } from "sonner";
 
 export default function TripDetails() {
   const { id } = useParams();
 
-  const [trip, setTrip] = useState<Trip | null>(null);
+  const navigate = useNavigate();
 
-  const [loading, setLoading] = useState(true);
-
-  const [generating, setGenerating] = useState(false);
+  const [trip, setTrip] = useState<Trip>();
+  const [weather, setWeather] = useState<any>(null);
 
   useEffect(() => {
-    fetchTrip();
-  }, []);
+    if (id) {
+      loadTrip();
+    }
+  }, [id]);
 
-  async function fetchTrip() {
-    const response = await getTrip(id!);
+  async function loadTrip() {
+    try {
+      const response = await getTrip(id!);
 
-    setTrip(response.data.data);
+      const trip = response.data.data;
+      setTrip(trip);
 
-    setLoading(false);
+      // Weather should not break the page
+      try {
+        const weatherResponse = await getWeather(trip.destination);
+        setWeather(weatherResponse);
+      } catch (error) {
+        console.error("Weather API failed:", error);
+
+        toast.error("Unable to load weather information.");
+
+        setWeather(null);
+      }
+    } catch (error) {
+      console.error(error);
+
+      toast.error("Failed to load trip.");
+
+      navigate("/");
+    }
   }
 
-  async function generate() {
-    setGenerating(true);
+  async function handleGenerate() {
+    await generateItinerary(id!);
 
-    await generateTrip(id!);
-
-    await fetchTrip();
-
-    setGenerating(false);
-  }
-
-  if (loading) {
-    return <Loading />;
+    loadTrip();
   }
 
   if (!trip) {
-    return <div>Trip not found</div>;
+    return <p>Loading...</p>;
   }
 
   return (
-    <>
-      <div className="max-w-5xl mx-auto p-8">
-        <h1 className="text-4xl font-bold">{trip.destination}</h1>
+    <div className="max-w-5xl mx-auto py-10">
+      <Button variant="ghost" onClick={() => navigate("/")}>
+        <ArrowLeft className="mr-2 h-4 w-4" />
+        Back
+      </Button>
 
-        <p className="mt-3">{trip.days} Days</p>
+      <h1 className="text-5xl font-bold mt-6">{trip.destination}</h1>
 
-        <p>₹{trip.budget}</p>
+      <div className="flex gap-4 mt-5">
+        <Badge>{trip.days} Days</Badge>
 
-        <p>{trip.interests.join(", ")}</p>
-
-        {!trip.itinerary && (
-          <button
-            onClick={generate}
-            disabled={generating}
-            className="bg-blue-600 text-white px-5 py-3 rounded mt-8"
-          >
-            {generating ? "Generating..." : "Generate Itinerary"}
-          </button>
-        )}
-
-        {trip.itinerary && (
-          <>
-            <div className="space-y-5 mt-8">
-              {trip.itinerary.days.map((day) => (
-                <DayCard key={day.day} day={day} />
-              ))}
-            </div>
-
-            <BudgetCard budget={trip.itinerary.budgetBreakdown} />
-
-            <div className="border rounded-lg p-5 mt-6">
-              <h2 className="text-xl font-semibold mb-3">Travel Tips</h2>
-
-              <ul className="list-disc ml-5">
-                {trip.itinerary.tips.map((tip) => (
-                  <li key={tip}>{tip}</li>
-                ))}
-              </ul>
-            </div>
-          </>
-        )}
+        <Badge>₹{trip.budget}</Badge>
       </div>
-    </>
+
+      <div className="flex flex-wrap gap-3 mt-5">
+        {trip.interests.map((interest) => (
+          <Badge key={interest} variant="outline">
+            {interest}
+          </Badge>
+        ))}
+      </div>
+
+      {!trip.itinerary && (
+        <Button className="mt-10" onClick={handleGenerate}>
+          Generate AI Itinerary
+        </Button>
+      )}
+
+      {trip.itinerary && (
+        <>
+          {trip.itinerary.days.map((day) => (
+            <DayCard key={day.day} day={day} />
+          ))}
+
+          <BudgetSection budget={trip.itinerary.budgetBreakdown} />
+
+          <TipsSection tips={trip.itinerary.tips} />
+        </>
+      )}
+
+      <Button variant="outline" onClick={() => downloadTripPDF(trip)}>
+        Download PDF
+      </Button>
+
+      {weather && <WeatherCard weather={weather} />}
+    </div>
   );
 }

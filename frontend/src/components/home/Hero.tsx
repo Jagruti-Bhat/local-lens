@@ -51,7 +51,15 @@ export default function Hero() {
               </Link>
             </Button>
 
-            <Button size="lg" variant="outline">
+            <Button
+              size="lg"
+              variant="outline"
+              onClick={() => {
+                document.getElementById("recent-trips")?.scrollIntoView({
+                  behavior: "smooth",
+                });
+              }}
+            >
               View Trips
             </Button>
           </div>

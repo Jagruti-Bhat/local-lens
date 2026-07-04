@@ -1,9 +1,9 @@
-export const interests = [
+export const INTERESTS = [
   "Food",
-  "History",
   "Nature",
-  "Shopping",
   "Adventure",
+  "History",
+  "Shopping",
   "Nightlife",
   "Culture",
   "Photography",

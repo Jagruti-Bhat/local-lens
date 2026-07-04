@@ -1,35 +1,35 @@
-import { DayPlan } from "../types/trip";
+import { Card, CardContent } from "@/components/ui/card";
+
+import { Day } from "@/types/trip";
 
 interface Props {
-  day: DayPlan;
+  day: Day;
 }
 
 export default function DayCard({ day }: Props) {
   return (
-    <div className="border rounded-lg p-5 mb-5">
-      <h2 className="text-xl font-bold">Day {day.day}</h2>
+    <div className="mt-10">
+      <h2 className="text-3xl font-bold mb-6">Day {day.day}</h2>
 
-      <h3 className="text-lg mb-4">{day.title}</h3>
+      <p className="text-slate-500 mb-8">{day.title}</p>
 
-      <div className="space-y-3">
+      <div className="space-y-5">
         {day.activities.map((activity, index) => (
-          <div key={index} className="border rounded-md p-3 bg-gray-50">
-            <p>
-              <strong>🕒 Time:</strong> {activity.time}
-            </p>
+          <Card key={index}>
+            <CardContent className="p-6">
+              <div className="flex justify-between">
+                <div>
+                  <h3 className="font-semibold text-lg">{activity.activity}</h3>
 
-            <p>
-              <strong>🎯 Activity:</strong> {activity.activity}
-            </p>
+                  <p className="text-slate-500 mt-2">🕘 {activity.time}</p>
 
-            <p>
-              <strong>📍 Location:</strong> {activity.location}
-            </p>
+                  <p className="text-slate-500">📍 {activity.location}</p>
+                </div>
 
-            <p>
-              <strong>💰 Cost:</strong> {activity.cost}
-            </p>
-          </div>
+                <div className="text-xl font-bold">{activity.cost}</div>
+              </div>
+            </CardContent>
+          </Card>
         ))}
       </div>
     </div>
