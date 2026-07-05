@@ -5,7 +5,7 @@
     "lib": ["DOM", "ES2020"],
     "jsx": "react-jsx",
     "module": "ESNext",
-    "moduleResolution": "Node",
+    "moduleResolution": "Bundler",
     "types": ["vite/client"],
     "strict": true,
     "esModuleInterop": true,
