@@ -1,5 +1,4 @@
 import dotenv from "dotenv";
-
 dotenv.config();
 
 import app from "./app";
@@ -7,39 +6,51 @@ import { connectDatabase } from "./config/database";
 import { sequelize } from "./config/sequelize";
 import "./models/trip";
 
-const PORT = process.env.PORT || 3001;
+const PORT = Number(process.env.PORT) || 5000;
 
 async function startServer() {
-  await connectDatabase();
+  try {
+    // Connect to PostgreSQL
+    await connectDatabase();
 
-  await sequelize.sync({ alter: true });
+    // Sync models
+    await sequelize.sync({ alter: true });
 
-  console.log("Tables synchronized");
+    console.log("✅ Tables synchronized");
 
-  const server = app.listen(PORT, () => {
-    console.log(`Server running on ${PORT}`);
-  });
-
-  const gracefulShutdown = async () => {
-    console.log("\nShutting down gracefully...");
-    server.close(async () => {
-      await sequelize.close();
-      process.exit(0);
+    // Start Express server
+    const server = app.listen(PORT, () => {
+      console.log(`🚀 Server running on port ${PORT}`);
     });
-  };
 
-  process.on("SIGTERM", gracefulShutdown);
-  process.on("SIGINT", gracefulShutdown);
+    // Graceful shutdown
+    const gracefulShutdown = async () => {
+      console.log("\n🛑 Shutting down gracefully...");
 
-  server.on("error", (err: any) => {
-    if (err.code === "EADDRINUSE") {
-      console.error(`Port ${PORT} is already in use. Retrying in 2 seconds...`);
-      setTimeout(() => {
-        server.close();
-        startServer();
-      }, 2000);
-    }
-  });
+      server.close(async () => {
+        try {
+          await sequelize.close();
+          console.log("✅ Database connection closed");
+        } catch (err) {
+          console.error("Error closing database:", err);
+        }
+
+        process.exit(0);
+      });
+    };
+
+    process.on("SIGINT", gracefulShutdown);
+    process.on("SIGTERM", gracefulShutdown);
+
+    server.on("error", (err: any) => {
+      console.error("Server Error:", err);
+      process.exit(1);
+    });
+  } catch (err) {
+    console.error("❌ Failed to start server");
+    console.error(err);
+    process.exit(1);
+  }
 }
 
 startServer();
